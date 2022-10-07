@@ -65,5 +65,5 @@ Output and execution files will be located in a dated directory (e.g. named `202
 * Include an output gcs path?
 * Docker push to DNAstack's docker hub
 * Test on files other than the [tutorial files](https://github.com/PacificBiosciences/trgt/tree/main/example)
-
+* Docker file is found in [bioinformatics-public-docker-images](https://github.com/DNAstack/bioinformatics-public-docker-images/tree/pacbio-trgt/pacbio_trgt_tools/0.0.1) repo
 
