@@ -1,0 +1,6 @@
+{
+  "trgt.repeats": "gs://karen_dev/trgt/repeat.bed",
+  "trgt.ref": "gs://karen_dev/trgt/reference.fasta",
+  "trgt.aligned_bam": "gs://karen_dev/trgt/sample.bam",
+  "trgt.repeat_id": "TR1"
+}
