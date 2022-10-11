@@ -16,15 +16,16 @@ This workflow is used for processing Illumina (paired-end) monkeypox sequencing 
 
 #### Workflow inputs:
 
-* Reference genome (FASTA)
-* Aligned reads (BAM/SAM)
-* The repeat definition file (BED)
+* Reference genome that is the same one used for read alignment (FASTA)
+* Aligned HiFi reads (BAM) and index (BAI)
+* The repeat definition file with reference coordinates and structure of tandem repeats (BED)
+* ID of the repeat to visualize
 
 #### Workflow outputs:
 
-#### TRGT
-* Unsorted VCF file that contains repeat genotypes 
-* Unsorted BAM file that contains pieces of HiFi reads that fully span the repeat sequences
+#### TRGT (in addition to samtools and bcftools)
+* Sorted VCF file and index that contains repeat genotypes 
+* Sorted BAM file and index that contains pieces of HiFi reads that fully span the repeat sequences
 
 #### TRVZ
 * A SVG file that contains the pileup read image 
@@ -61,9 +62,6 @@ Output and execution files will be located in a dated directory (e.g. named `202
 ## Notes / To-Do's
 
 * Improve workflow by possibly adding an alignment step so that FASTQ can be an input. However, researchers cannot choose their own aligner
-* Fix the `repeat_id` in `inputs.json` to grep the ID in the `repeat.bed` file instead of feeding it a literal string
+* Improve workflow by changing `repeat_id` to grep the ID in the `repeat.bed` file instead of feeding it a literal single string in order to loop over TRVZ to generate multiple pile-up images 
 * Include an output gcs path?
-* Remove gcs options in runtime block (i.e., preemptible) 
-* Test on files other than the [tutorial files](https://github.com/PacificBiosciences/trgt/tree/main/example)
-* Docker file is found in [bioinformatics-public-docker-images](https://github.com/DNAstack/bioinformatics-public-docker-images/tree/pacbio-trgt/pacbio_trgt_tools/0.0.1) repo
-
+* Find test on files other than the [tutorial files](https://github.com/PacificBiosciences/trgt/tree/main/example)
