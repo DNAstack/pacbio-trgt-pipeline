@@ -5,17 +5,19 @@ workflow trgt {
 		File ref 
 		File repeats 
 		File aligned_bam
+		File aligned_bai
 		String repeat_id
 		String container_registry
 	}
 
-	String aligned_bam_basename = basename(aligned_bam) 
+	String aligned_bam_basename = basename(aligned_bam, ".bam") 
 
 	call genotype_repeats {
 		input:
 			ref = ref,
 			repeats = repeats,
 			aligned_bam = aligned_bam,
+			aligned_bai = aligned_bai,
 			aligned_bam_basename = aligned_bam_basename,
 			container_registry = container_registry
 	}
@@ -39,7 +41,9 @@ workflow trgt {
 			ref = ref,
 			repeats = repeats,
 			sorted_trgt_vcf = sort_index_vcf.sorted_trgt_vcf,
+			sorted_trgt_vcf_index = sort_index_vcf.sorted_trgt_vcf_index,
 			sorted_trgt_bam = sort_index_spanning_bam.sorted_trgt_bam,
+			sorted_trgt_bam_index = sort_index_spanning_bam.sorted_trgt_bam_index,
 			repeat_id = repeat_id,
 			container_registry = container_registry
 	}
@@ -65,6 +69,7 @@ task genotype_repeats {
 		File ref
 		File repeats 
 		File aligned_bam
+		File aligned_bai
 
 		String aligned_bam_basename
 		String container_registry
@@ -110,7 +115,8 @@ task sort_index_vcf {
 			~{trgt_vcf} 
 
 		bcftools index \
-			"~{aligned_bam_basename}.sorted.vcf.gz"
+			"~{aligned_bam_basename}.sorted.vcf.gz" \
+			-o "~{aligned_bam_basename}.sorted.vcf.gz.tbi"
 	>>>
 
 	output {
@@ -144,7 +150,8 @@ task sort_index_spanning_bam {
 			~{trgt_bam} 
 
 		samtools index \
-			"~{aligned_bam_basename}.spanning.sorted.bam"
+			"~{aligned_bam_basename}.spanning.sorted.bam" \
+			-o "~{aligned_bam_basename}.spanning.sorted.bam.bai"
 	>>>
 
 	output {
@@ -166,7 +173,9 @@ task visualize_repeats {
 		File ref
 		File repeats 
 		File sorted_trgt_vcf
+		File sorted_trgt_vcf_index
 		File sorted_trgt_bam
+		File sorted_trgt_bam_index
 
 		String repeat_id
 		String container_registry
@@ -177,7 +186,7 @@ task visualize_repeats {
 	command <<<
 		trvz --genome ~{ref} \
 			--repeats ~{repeats} \
-			--vcf ~{sorted_trgt_vcf}
+			--vcf ~{sorted_trgt_vcf} \
 			--spanning-reads ~{sorted_trgt_bam} \
 			--repeat-id ~{repeat_id} \
 			--image "~{repeat_id}.svg"
