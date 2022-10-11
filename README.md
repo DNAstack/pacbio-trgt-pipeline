@@ -63,7 +63,7 @@ Output and execution files will be located in a dated directory (e.g. named `202
 * Improve workflow by possibly adding an alignment step so that FASTQ can be an input. However, researchers cannot choose their own aligner
 * Fix the `repeat_id` in `inputs.json` to grep the ID in the `repeat.bed` file instead of feeding it a literal string
 * Include an output gcs path?
-* Docker push to DNAstack's docker hub
+* Remove gcs options in runtime block (i.e., preemptible) 
 * Test on files other than the [tutorial files](https://github.com/PacificBiosciences/trgt/tree/main/example)
 * Docker file is found in [bioinformatics-public-docker-images](https://github.com/DNAstack/bioinformatics-public-docker-images/tree/pacbio-trgt/pacbio_trgt_tools/0.0.1) repo
 
