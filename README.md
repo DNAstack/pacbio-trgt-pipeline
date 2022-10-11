@@ -1,34 +1,31 @@
-# PacBio TRGT: Tandem Repeat Genotyper implemented in workflow
+# PacBio TRGT: Tandem Repeat Genotyper implemented in Workflow Description Language (WDL)
 
-This repository contains a workflow for processing PacBio HiFi data and specifically focuses on the [TRGT tool](https://github.com/pacificBiosciences/trgt/) that profiles sequence composition, mosaicism, and CpG methylation of each analyzed repeat. 
+This repository contains a [WDL workflow](https://github.com/openwdl/wdl/blob/main/versions/1.0/SPEC.md) for processing PacBio HiFi data using the [TRGT tool](https://github.com/pacificBiosciences/trgt/). `trgt` profiles sequence composition, mosaicism, and CpG methylation of analyzed repeats.
 
-Docker image definitions can be explored [in DNAstack's image repository](https://github.com/dnastack/bioinformatics-public-docker-images), or [on Dockerhub](https://hub.docker.com/u/dnastack).
-
-
-## Workflows
-
-These workflows can be used to process aligned reads.
+Docker images containing the tools used by this workflow can be explored [in DNAstack's image repository](https://github.com/dnastack/bioinformatics-public-docker-images), or [on Dockerhub](https://hub.docker.com/u/dnastack).
 
 
-### Illumina
+## Workflow inputs
 
-This workflow is used for processing Illumina (paired-end) monkeypox sequencing data.
+An input template file with some defaults predefined can be found [here](./workflows/inputs.json).
+Some example input files can be found [in PacBio's `trgt` repository](https://github.com/PacificBiosciences/trgt/tree/main/example).
 
-#### Workflow inputs:
+| Input | Description |
+| :- | :- |
+| `ref` | The reference genome that was used for read alignment (FASTA) |
+| `aligned_bam`, `aligned_bai` | Aligned HiFi reads (BAM) and index (BAI) |
+| `repeats` | The repeat definition file with reference coordinates and structure of tandem repeats (BED) |
+| `repeat_id` | ID of the repeat to visualize |
+| `container_registry` | Registry that hosts workflow containers. All containers are hosted in [DNAstack's Dockerhub](https://hub.docker.com/u/dnastack) [`dnastack`] |
 
-* Reference genome that is the same one used for read alignment (FASTA)
-* Aligned HiFi reads (BAM) and index (BAI)
-* The repeat definition file with reference coordinates and structure of tandem repeats (BED)
-* ID of the repeat to visualize
 
-#### Workflow outputs:
+## Workflow outputs
 
-#### TRGT (in addition to samtools and bcftools)
-* Sorted VCF file and index that contains repeat genotypes 
-* Sorted BAM file and index that contains pieces of HiFi reads that fully span the repeat sequences
-
-#### TRVZ
-* A SVG file that contains the pileup read image 
+| Output | Description |
+| :- | :- |
+| `sorted_trgt_vcf`, `sorted_trgt_vcf_index` | Sorted VCF file and index that contains repeat genotypes; output by `trgt` |
+| `sorted_trgt_bam`, `sorted_trgt_bam_index` | Sorted BAM file and index that contains pieces of HiFi reads that fully span the repeat sequences; output by `trgt` |
+| `pileup_image` | An SVG file that contains the pileup read image; output by `trvz` |
 
 
 ## Running workflows
@@ -57,11 +54,10 @@ This command assumes you have `miniwdl` available on your command line. If `mini
 miniwdl run /path/to/workflow.wdl -i /path/to/inputs.json
 ```
 
-Output and execution files will be located in a dated directory (e.g. named `20200704_073415_main`). When the workflow finishes successfully, it will output JSON (to stdout) specifying the full path to each output file. 
+Output and execution files will be located in a dated directory (e.g. named `20200704_073415_main`). When the workflow finishes successfully, it will output JSON (to stdout) specifying the full path to each output file.
 
-## Notes / To-Do's
 
-* Improve workflow by possibly adding an alignment step so that FASTQ can be an input. However, researchers cannot choose their own aligner
-* Improve workflow by changing `repeat_id` to grep the ID in the `repeat.bed` file instead of feeding it a literal single string in order to loop over TRVZ to generate multiple pile-up images 
-* Include an output gcs path?
-* Find test on files other than the [tutorial files](https://github.com/PacificBiosciences/trgt/tree/main/example)
+## Future work
+
+* Add an optional alignment step so that FASTQ can be an input
+* Improve workflow by changing `repeat_id` to grep the ID in the `repeat.bed` file instead of feeding it a literal single string in order to loop over TRVZ to generate multiple pile-up images
