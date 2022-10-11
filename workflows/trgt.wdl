@@ -6,6 +6,7 @@ workflow trgt {
 		File repeats 
 		File aligned_bam
 		String repeat_id
+		String container_registry
 	}
 
 	String aligned_bam_basename = basename(aligned_bam) 
@@ -15,19 +16,22 @@ workflow trgt {
 			ref = ref,
 			repeats = repeats,
 			aligned_bam = aligned_bam,
-			aligned_bam_basename = aligned_bam_basename
+			aligned_bam_basename = aligned_bam_basename,
+			container_registry = container_registry
 	}
 
 	call sort_index_vcf {
 		input:
 			trgt_vcf = genotype_repeats.trgt_vcf,
-			aligned_bam_basename = aligned_bam_basename
+			aligned_bam_basename = aligned_bam_basename,
+			container_registry = container_registry
 	}
 
 	call sort_index_spanning_bam {
 		input:
 			trgt_bam = genotype_repeats.trgt_bam,
-			aligned_bam_basename = aligned_bam_basename
+			aligned_bam_basename = aligned_bam_basename,
+			container_registry = container_registry
 	}
 
 	call visualize_repeats {
@@ -36,7 +40,8 @@ workflow trgt {
 			repeats = repeats,
 			sorted_trgt_vcf = sort_index_vcf.sorted_trgt_vcf,
 			sorted_trgt_bam = sort_index_spanning_bam.sorted_trgt_bam,
-			repeat_id = repeat_id
+			repeat_id = repeat_id,
+			container_registry = container_registry
 	}
 
 	output {
@@ -62,6 +67,7 @@ task genotype_repeats {
 		File aligned_bam
 
 		String aligned_bam_basename
+		String container_registry
 	}
 
 	Int disk_size = ceil((size(ref, "GB") + size(repeats, "GB") + size(aligned_bam, "GB")) * 2 + 20)
@@ -79,7 +85,7 @@ task genotype_repeats {
 	}
 
 	runtime {
-		docker: "us-central1-docker.pkg.dev/cool-benefit-817/workflow-images/pacbio_trgt_tools:0.0.1"
+		docker: "~{container_registry}/pacbio_trgt_tools:0.0.1"
 		cpu: 1
 		memory: "7.5 GB"
 		disks: "local-disk " + disk_size + " HDD"
@@ -92,6 +98,7 @@ task sort_index_vcf {
 		File trgt_vcf 
 
 		String aligned_bam_basename
+		String container_registry
 	}
 
 	Int disk_size = ceil(size(trgt_vcf, "GB") * 2 + 20)
@@ -112,7 +119,7 @@ task sort_index_vcf {
 	}
 
 	runtime {
-		docker: "us-central1-docker.pkg.dev/cool-benefit-817/workflow-images/pacbio_trgt_tools:0.0.1"
+		docker: "~{container_registry}/pacbio_trgt_tools:0.0.1"
 		cpu: 1
 		memory: "7.5 GB"
 		disks: "local-disk " + disk_size + " HDD"
@@ -126,6 +133,7 @@ task sort_index_spanning_bam {
 		File trgt_bam
 
 		String aligned_bam_basename
+		String container_registry
 	}
 
 	Int disk_size = ceil(size(trgt_bam, "GB") * 2 + 20)
@@ -145,7 +153,7 @@ task sort_index_spanning_bam {
 	}
 
 	runtime {
-		docker: "us-central1-docker.pkg.dev/cool-benefit-817/workflow-images/pacbio_trgt_tools:0.0.1"
+		docker: "~{container_registry}/pacbio_trgt_tools:0.0.1"
 		cpu: 1
 		memory: "7.5 GB"
 		disks: "local-disk " + disk_size + " HDD"
@@ -161,6 +169,7 @@ task visualize_repeats {
 		File sorted_trgt_bam
 
 		String repeat_id
+		String container_registry
 	}
 
 	Int disk_size = ceil((size(ref, "GB") + size(repeats, "GB") + size(sorted_trgt_vcf, "GB") + size(sorted_trgt_bam, "GB")) * 2 + 20)
@@ -179,7 +188,7 @@ task visualize_repeats {
 	}
 
 	runtime {
-		docker: "us-central1-docker.pkg.dev/cool-benefit-817/workflow-images/pacbio_trgt_tools:0.0.1"
+		docker: "~{container_registry}/pacbio_trgt_tools:0.0.1"
 		cpu: 1
 		memory: "7.5 GB"
 		disks: "local-disk " + disk_size + " HDD"
